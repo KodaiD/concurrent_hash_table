@@ -1,6 +1,7 @@
 #include <cassert>
 #include <chrono>
 #include <numeric>
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -32,9 +33,9 @@ void delete_worker(HashTable& ht, int i) {
     }
 }
 
-void print_ave(std::vector<int>& v) {
+void print_ave(std::string s, std::vector<int>& v) {
     int result = std::accumulate(v.begin(), v.end(), 0.0) / NUM_OPS;
-    std::cout << "average[insert]: " << result << " msec \n";
+    std::cout << s << "[average]: " << result << " msec \n";
 }
 
 int main() {
@@ -109,9 +110,9 @@ int main() {
         std::cout << std::endl;
     }
 
-    print_ave(insert_result);
-    print_ave(search_result);
-    print_ave(delete_result);
+    print_ave("insert", insert_result);
+    print_ave("search", search_result);
+    print_ave("delete", delete_result);
 
     std::cout << "===== PASS =====" << std::endl;
 
