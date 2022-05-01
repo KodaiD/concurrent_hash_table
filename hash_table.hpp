@@ -12,6 +12,6 @@ class HashTable {
 
    private:
     int hash(Key);
-    BucketChain* table;
-    const int table_size;
+    BucketChain* table_;
+    const int table_size_;
 };

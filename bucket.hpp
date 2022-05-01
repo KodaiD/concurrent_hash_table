@@ -12,9 +12,11 @@ class Bucket {
     void set_val(Key key, Value value);
     Bucket* get_next();
     void set_next(Bucket* bucket);
+    bool is_empty();
 
    private:
-    Bucket* next;
-    Key key;
-    Value val;
+    Bucket* next_;
+    Key key_;
+    Value val_;
+    bool empty_;
 };

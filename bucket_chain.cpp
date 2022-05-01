@@ -1,52 +1,61 @@
 #include "bucket_chain.hpp"
 
-BucketChain::BucketChain() : head(nullptr) {}
+BucketChain::BucketChain() : head_(new Bucket) {}
 
 BucketChain::~BucketChain() { clear(); }
 
 std::pair<Value, int> BucketChain::search(Key key) {
-    std::shared_lock lock(mutex);
+    std::shared_lock lock(mutex_);
     int num_traversals = 1;
-    Bucket* bucket = head;
-    while (bucket && bucket->get_key() != key) {
+    Bucket* bucket = head_;
+    while (bucket && !bucket->is_empty() && bucket->get_key() != key) {
         bucket = bucket->get_next();
         num_traversals++;
     }
-    if (bucket)
-        return std::make_pair(bucket->get_val(), num_traversals);
+    if (!bucket)
+        return std::make_pair(-1, num_traversals);
+    else if (bucket->is_empty())
+        return std::make_pair(-1, num_traversals);
     else
-        return std::make_pair(-1, -1);
+        return std::make_pair(bucket->get_val(), num_traversals);
 }
 
 void BucketChain::insert(Key key, Value val) {
-    Bucket* new_bucket = new Bucket(key, val);
-    std::unique_lock lock(mutex);
+    std::unique_lock lock(mutex_);
 
-    Bucket* bucket = head;
+    Bucket* bucket = head_;
     if (!bucket) {
-        head = new_bucket;
-    } else {
-        while (bucket->get_next()) {
-            bucket = bucket->get_next();
-        }
-        bucket->set_next(new_bucket);
+        head_ = new Bucket(key, val);
+        return;
     }
+    if (bucket->is_empty()) {
+        bucket->set_val(key, val);
+        return;
+    }
+    while (bucket->get_next()) {
+        bucket = bucket->get_next();
+        if (bucket->is_empty()) {
+            bucket->set_val(key, val);
+            return;
+        }
+    }
+    bucket->set_next(new Bucket(key, val));
 }
 
 void BucketChain::del(Key key) {
-    std::unique_lock<std::shared_mutex> lock(mutex);
-    Bucket* bucket = head;
+    std::unique_lock<std::shared_mutex> lock(mutex_);
+    Bucket* bucket = head_;
 
     // no data in the chain
     if (!bucket) return;
 
     // found at the head of the chain
-    if (head->get_key() == key) {
-        if (!head->get_next()) {
-            head = nullptr;
+    if (head_->get_key() == key) {
+        if (!head_->get_next()) {
+            head_ = nullptr;
             delete bucket;
         } else {
-            head = head->get_next();
+            head_ = head_->get_next();
             bucket->set_next(nullptr);
             delete bucket;
         }
@@ -69,9 +78,9 @@ void BucketChain::del(Key key) {
 }
 
 void BucketChain::clear() {
-    std::unique_lock lock(mutex);
+    std::unique_lock lock(mutex_);
 
-    Bucket* bucket = head;
+    Bucket* bucket = head_;
     Bucket* prev;
     if (bucket) {
         while (bucket->get_next()) {
@@ -81,5 +90,5 @@ void BucketChain::clear() {
         }
         delete bucket;
     }
-    head = nullptr;
+    head_ = nullptr;
 }

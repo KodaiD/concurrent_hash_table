@@ -17,6 +17,6 @@ class BucketChain {
     void clear();
 
    private:
-    Bucket* head;
-    mutable std::shared_mutex mutex;
+    Bucket* head_;
+    mutable std::shared_mutex mutex_;
 };

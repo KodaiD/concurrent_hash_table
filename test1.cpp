@@ -22,7 +22,7 @@ int main() {
     }
 
     for (int i = 0; i < DATA_SIZE; i++) {
-        assert(ht.search(i).second == -1);
+        assert(ht.search(i).first == -1);
     }
 
     std::cout << "\n===== PASS =====\n\n";
