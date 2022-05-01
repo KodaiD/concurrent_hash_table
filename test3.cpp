@@ -12,7 +12,6 @@
 
 #define DATA_SIZE 10000000
 #define TABLE_SIZE 10000000
-#define NUM_THREADS 1
 #define NUM_OPS 5
 
 void print_ave(std::string s, std::vector<int>& v) {
@@ -24,6 +23,8 @@ int main() {
     std::vector<int> insert_result;
     std::vector<int> search_result;
     std::vector<int> delete_result;
+
+    std::cout << "omp num threads: " << omp_get_max_threads() << "\n\n";
 
     for (int n = 0; n < NUM_OPS; n++) {
         HashTable ht(TABLE_SIZE);

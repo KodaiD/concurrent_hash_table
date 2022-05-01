@@ -43,6 +43,8 @@ int main() {
     std::vector<int> search_result;
     std::vector<int> delete_result;
 
+    std::cout << "omp num threads: " << NUM_THREADS << "\n\n";
+
     for (int n = 0; n < NUM_OPS; n++) {
         HashTable ht(TABLE_SIZE);
 
