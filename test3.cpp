@@ -88,9 +88,9 @@ int main() {
         std::cout << std::endl;
     }
 
-    print_ave("insert", insert_result);
     print_ave("search", search_result);
     print_ave("delete", delete_result);
+    print_ave("insert", insert_result);
 
     std::cout << "\n===== PASS =====\n\n";
 

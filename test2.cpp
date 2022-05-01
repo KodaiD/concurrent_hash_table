@@ -12,13 +12,6 @@
 #define NUM_THREADS 16
 #define NUM_OPS 5
 
-void insert_worker(HashTable& ht, int i) {
-    for (int j = i * DATA_SIZE / NUM_THREADS;
-         j < (i + 1) * DATA_SIZE / NUM_THREADS; j++) {
-        ht.insert(j, j);
-    }
-}
-
 void search_worker(HashTable& ht, int i) {
     for (int j = i * DATA_SIZE / NUM_THREADS;
          j < (i + 1) * DATA_SIZE / NUM_THREADS; j++) {
@@ -30,6 +23,13 @@ void delete_worker(HashTable& ht, int i) {
     for (int j = i * DATA_SIZE / NUM_THREADS;
          j < (i + 1) * DATA_SIZE / NUM_THREADS; j++) {
         ht.del(j);
+    }
+}
+
+void insert_worker(HashTable& ht, int i) {
+    for (int j = i * DATA_SIZE / NUM_THREADS;
+         j < (i + 1) * DATA_SIZE / NUM_THREADS; j++) {
+        ht.insert(j, j);
     }
 }
 
@@ -54,7 +54,7 @@ int main() {
         // search
 
         std::vector<std::thread> search_workers;
-        auto start = std::chrono::system_clock::now();
+        auto start = std::chrono::high_resolution_clock::now();
 
         for (int i = 0; i < NUM_THREADS; i++) {
             search_workers.emplace_back(search_worker, std::ref(ht), i);
@@ -63,7 +63,7 @@ int main() {
             t.join();
         }
 
-        auto end = std::chrono::system_clock::now();
+        auto end = std::chrono::high_resolution_clock::now();
         auto dur = end - start;
         auto msec =
             std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
@@ -77,7 +77,7 @@ int main() {
         // delete
 
         std::vector<std::thread> delete_workers;
-        start = std::chrono::system_clock::now();
+        start = std::chrono::high_resolution_clock::now();
 
         for (int i = 0; i < NUM_THREADS; i++) {
             delete_workers.emplace_back(delete_worker, std::ref(ht), i);
@@ -86,7 +86,7 @@ int main() {
             t.join();
         }
 
-        end = std::chrono::system_clock::now();
+        end = std::chrono::high_resolution_clock::now();
         dur = end - start;
         msec =
             std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
@@ -96,7 +96,7 @@ int main() {
         // insert
 
         std::vector<std::thread> insert_workers;
-        start = std::chrono::system_clock::now();
+        start = std::chrono::high_resolution_clock::now();
 
         for (int i = 0; i < NUM_THREADS; i++) {
             insert_workers.emplace_back(insert_worker, std::ref(ht), i);
@@ -105,7 +105,7 @@ int main() {
             t.join();
         }
 
-        end = std::chrono::system_clock::now();
+        end = std::chrono::high_resolution_clock::now();
         dur = end - start;
         msec =
             std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
@@ -115,9 +115,9 @@ int main() {
         std::cout << std::endl;
     }
 
-    print_ave("insert", insert_result);
     print_ave("search", search_result);
     print_ave("delete", delete_result);
+    print_ave("insert", insert_result);
 
     std::cout << "\n===== PASS =====\n\n";
 
