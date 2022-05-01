@@ -25,5 +25,5 @@ int main() {
         assert(ht.search(i).second == -1);
     }
 
-    std::cout << "===== PASS =====" << std::endl;
+    std::cout << "\n===== PASS =====\n\n";
 }

@@ -28,35 +28,22 @@ int main() {
 
     for (int n = 0; n < NUM_OPS; n++) {
         HashTable ht(TABLE_SIZE);
-
-        // insert
-
-        auto start = std::chrono::high_resolution_clock::now();
-
-#pragma omp parallel for
         for (int i = 0; i < DATA_SIZE; i++) {
             ht.insert(i, i);
         }
 
-        auto end = std::chrono::high_resolution_clock::now();
-        auto dur = end - start;
-        auto msec =
-            std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
-        insert_result.emplace_back(msec);
-        std::cout << "insert: " << msec << " msec \n";
-
         // search
 
-        start = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::high_resolution_clock::now();
 
 #pragma omp parallel for
         for (int i = 0; i < DATA_SIZE; i++) {
             assert(ht.search(i).first == i);
         }
 
-        end = std::chrono::high_resolution_clock::now();
-        dur = end - start;
-        msec =
+        auto end = std::chrono::high_resolution_clock::now();
+        auto dur = end - start;
+        auto msec =
             std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
         search_result.emplace_back(msec);
         std::cout << "search: " << msec << " msec \n";
@@ -82,6 +69,22 @@ int main() {
         delete_result.emplace_back(msec);
         std::cout << "delete: " << msec << " msec \n";
 
+        // insert
+
+        start = std::chrono::high_resolution_clock::now();
+
+#pragma omp parallel for
+        for (int i = 0; i < DATA_SIZE; i++) {
+            ht.insert(i, i);
+        }
+
+        end = std::chrono::high_resolution_clock::now();
+        dur = end - start;
+        msec =
+            std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
+        insert_result.emplace_back(msec);
+        std::cout << "insert: " << msec << " msec \n";
+
         std::cout << std::endl;
     }
 
@@ -89,7 +92,7 @@ int main() {
     print_ave("search", search_result);
     print_ave("delete", delete_result);
 
-    std::cout << "===== PASS =====" << std::endl;
+    std::cout << "\n===== PASS =====\n\n";
 
     return 0;
 }
