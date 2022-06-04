@@ -14,6 +14,12 @@
 #define TABLE_SIZE 10000000
 #define NUM_OPS 5
 
+struct Record {
+    Record(int key, int val) : key(key), val(val) {}
+    int key;
+    int val;
+};
+
 void print_ave(std::string s, std::vector<int>& v) {
     int result = std::accumulate(v.begin(), v.end(), 0.0) / NUM_OPS;
     std::cout << s << "[average]: " << result << " msec \n";
@@ -27,7 +33,7 @@ int main() {
     std::cout << "omp num threads: " << omp_get_max_threads() << "\n\n";
 
     for (int n = 0; n < NUM_OPS; n++) {
-        HashTable ht(TABLE_SIZE);
+        HashTable<Record*> ht(TABLE_SIZE);
 
         // insert
 
@@ -35,7 +41,7 @@ int main() {
 
 #pragma omp parallel for
         for (int i = 0; i < DATA_SIZE; i++) {
-            ht.insert(i, i);
+            ht.insert(i, new Record(i, i));
         }
 
         auto end = std::chrono::high_resolution_clock::now();
@@ -51,7 +57,7 @@ int main() {
 
 #pragma omp parallel for
         for (int i = 0; i < DATA_SIZE; i++) {
-            assert(ht.search(i).first == i);
+            assert(ht.search(i)->val == i);
         }
 
         end = std::chrono::high_resolution_clock::now();

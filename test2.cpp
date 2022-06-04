@@ -12,21 +12,27 @@
 #define NUM_THREADS 16
 #define NUM_OPS 5
 
-void insert_worker(HashTable& ht, int i) {
+struct Record {
+    Record(int key, int val) : key(key), val(val) {}
+    int key;
+    int val;
+};
+
+void insert_worker(HashTable<Record*>& ht, int i) {
     for (int j = i * DATA_SIZE / NUM_THREADS;
          j < (i + 1) * DATA_SIZE / NUM_THREADS; j++) {
-        ht.insert(j, j);
+        ht.insert(j, new Record(j, j));
     }
 }
 
-void search_worker(HashTable& ht, int i) {
+void search_worker(HashTable<Record*>& ht, int i) {
     for (int j = i * DATA_SIZE / NUM_THREADS;
          j < (i + 1) * DATA_SIZE / NUM_THREADS; j++) {
-        assert(ht.search(j).first == j);
+        assert(ht.search(j)->val == j);
     }
 }
 
-void delete_worker(HashTable& ht, int i) {
+void delete_worker(HashTable<Record*>& ht, int i) {
     for (int j = i * DATA_SIZE / NUM_THREADS;
          j < (i + 1) * DATA_SIZE / NUM_THREADS; j++) {
         ht.del(j);
@@ -46,7 +52,7 @@ int main() {
     std::cout << "omp num threads: " << NUM_THREADS << "\n\n";
 
     for (int n = 0; n < NUM_OPS; n++) {
-        HashTable ht(TABLE_SIZE);
+        HashTable<Record*> ht(TABLE_SIZE);
 
         // insert
 
